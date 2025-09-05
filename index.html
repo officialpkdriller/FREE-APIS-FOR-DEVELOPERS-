@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PK Image Enhancer - AI Photo Quality Upgrade</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Enhance your photos using advanced AI! Bright, beautiful interface.">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #7b2ff2 0%, #f357a8 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Montserrat', Arial, sans-serif;
+      color: #fff;
+    }
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: rgba(255,255,255,0.12);
+      border-radius: 24px;
+      box-shadow: 0 6px 24px rgba(123,47,242,0.25);
+      padding: 32px 24px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.4em;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 2px 2px 8px #7b2ff2;
+    }
+    p {
+      font-size: 1.1em;
+      color: #ffe6fa;
+      margin-bottom: 30px;
+    }
+    .upload-label {
+      display: inline-block;
+      padding: 14px 32px;
+      background: linear-gradient(90deg,#ffb86c,#ff61ef);
+      color: #fff;
+      font-size: 1.1em;
+      font-weight: bold;
+      border-radius: 32px;
+      cursor: pointer;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 16px rgba(243,87,168,0.18);
+      transition: background 0.2s;
+    }
+    .upload-label:hover {
+      background: linear-gradient(90deg,#ff61ef,#ffb86c);
+    }
+    #file-input {
+      display: none;
+    }
+    .preview-img {
+      max-width: 90%;
+      margin: 16px auto;
+      border-radius: 18px;
+      box-shadow: 0 2px 18px #ff61ef44;
+      display: none;
+    }
+    .btn {
+      display: inline-block;
+      margin: 16px 8px 0 8px;
+      padding: 12px 32px;
+      background: linear-gradient(90deg,#7b2ff2,#f357a8);
+      color: #fff;
+      border: none;
+      border-radius: 32px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 10px #7b2ff255;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: linear-gradient(90deg,#f357a8,#7b2ff2);
+    }
+    .result-section {
+      margin-top: 30px;
+      background: rgba(255,255,255,0.09);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .result-img {
+      max-width: 90%;
+      border-radius: 18px;
+      box-shadow: 0 2px 18px #7b2ff244;
+    }
+    .loader {
+      margin: 24px auto;
+      border: 6px solid #fff;
+      border-top: 6px solid #f357a8;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    .features {
+      margin: 24px 0 0 0;
+      padding: 0;
+      text-align: left;
+      color: #fff;
+      font-size: 1em;
+      background: none;
+    }
+    .features li {
+      margin-bottom: 7px;
+      list-style: "✨ ";
+      padding-left: 10px;
+    }
+    .share-btn {
+      background: linear-gradient(90deg,#ffb86c,#7b2ff2);
+      color: #fff;
+      font-weight: bold;
+      border-radius: 32px;
+      border: none;
+      padding: 10px 26px;
+      box-shadow: 0 2px 10px #ffb86c55;
+      cursor: pointer;
+      margin-left: 9px;
+    }
+    .share-btn:hover {
+      background: linear-gradient(90deg,#7b2ff2,#ffb86c);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PK Image Enhancer ✨</h1>
+    <p>Upgrade your photos instantly with AI-powered enhancement. Just upload, enhance, and shine!</p>
+    <label class="upload-label" for="file-input">📤 Upload Image</label>
+    <input type="file" id="file-input" accept="image/jpeg,image/png">
+    <img id="preview" class="preview-img" src="#" alt="Image preview">
+    <button class="btn" id="enhance-btn" disabled>Enhance Now</button>
+    <div class="loader" id="loader"></div>
+    <div class="result-section" id="result" style="display:none;">
+      <h2 style="color:#ffb86c;">Enhanced Image</h2>
+      <img id="result-img" class="result-img" src="#" alt="Enhanced result">
+      <br>
+      <a id="download-btn" class="btn" href="#" download="enhanced.jpg">Download</a>
+      <button id="share-btn" class="share-btn">Share</button>
+    </div>
+    <ul class="features">
+      <li>AI-powered ultra-high quality enhancement</li>
+      <li>Supports JPEG & PNG images</li>
+      <li>Bright, beautiful design</li>
+      <li>Fast, secure processing</li>
+      <li>Download & share instantly</li>
+    </ul>
+  </div>
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const previewImg = document.getElementById('preview');
+    const enhanceBtn = document.getElementById('enhance-btn');
+    const loader = document.getElementById('loader');
+    const resultSection = document.getElementById('result');
+    const resultImg = document.getElementById('result-img');
+    const downloadBtn = document.getElementById('download-btn');
+    const shareBtn = document.getElementById('share-btn');
+    let selectedFile = null;
+
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+        alert("Only JPEG or PNG images are supported!");
+        e.target.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        previewImg.src = evt.target.result;
+        previewImg.style.display = "block";
+        enhanceBtn.disabled = false;
+      };
+      reader.readAsDataURL(file);
+      selectedFile = file;
+      resultSection.style.display = "none";
+    };
+
+    enhanceBtn.onclick = async () => {
+      if (!selectedFile) return;
+      enhanceBtn.disabled = true;
+      loader.style.display = "block";
+      resultSection.style.display = "none";
+      try {
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+        // Change URL to your backend endpoint (see note below)
+        const response = await fetch('/enhance', {
+          method: 'POST',
+          body: formData
+        });
+        if (!response.ok) throw new Error("Failed to enhance image!");
+        const blob = await response.blob();
+        if (blob.size < 100) throw new Error("Invalid image returned.");
+        const url = URL.createObjectURL(blob);
+        resultImg.src = url;
+        downloadBtn.href = url;
+        resultSection.style.display = "block";
+        loader.style.display = "none";
+        enhanceBtn.disabled = false;
+      } catch (err) {
+        loader.style.display = "none";
+        enhanceBtn.disabled = false;
+        alert("❌ Error: " + (err.message || "Failed to enhance image!"));
+      }
+    };
+
+    shareBtn.onclick = () => {
+      if (navigator.share && resultImg.src) {
+        fetch(resultImg.src)
+          .then(r => r.blob())
+          .then(blob => {
+            const file = new File([blob], "enhanced.jpg", { type: "image/jpeg" });
+            navigator.share({
+              title: "Enhanced Photo",
+              text: "Check out my enhanced image!",
+              files: [file]
+            });
+          });
+      } else {
+        alert("Sharing not supported on this device/browser.");
+      }
+    };
+  </script>
+</body>
+</html>
